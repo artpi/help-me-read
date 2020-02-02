@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+    <title>Upload to recognition</title>
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <style>
+        #results {
+            width: 100%;
+            display: none;
+        }
+        #results > div {
+            font-size: 7vw;
+            padding: 10vw;
+            border: 5px solid black
+        }
+        #upload {
+            display: none;
+            padding: 20vw;
+        }
+        .custom-file-upload {
+            font-size: 10vw;
+            padding: 2vw;
+            border: 1px solid black;
+            display: block;
+        }
+
+        #set_up_token textarea {
+            width: 80%;
+            margin-left:auto;
+            margin-right: auto;
+            display:block;
+        }
+        #set_up_token {
+            display: none;
+        }
+
+    </style>
+    <script type="text/javascript">
+		var synth = window.speechSynthesis;
+
+		function speak( text ){
+			voices = synth.getVoices().filter( function( v ) {
+				return ( v.lang === 'pl-PL');
+			} );
+			//console.log( voices );
+			if (synth.speaking) {
+				console.error('speechSynthesis.speaking');
+				return;
+			}
+			// if (inputTxt.value !== '') {
+			var utterThis = new SpeechSynthesisUtterance( text );
+			utterThis.onend = function (event) {
+				console.log('SpeechSynthesisUtterance.onend');
+			}
+			utterThis.onerror = function (event) {
+				console.error('SpeechSynthesisUtterance.onerror');
+			}
+//    var selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
+//    for(i = 0; i < voices.length ; i++) {
+//      if(voices[i].name === selectedOption) {
+//        utterThis.voice = voices[i];
+//      }
+//    }
+			utterThis.voice = voices[0];
+			//utterThis.pitch = pitch.value;
+			//utterThis.rate = rate.value;
+			synth.speak(utterThis);
+		}
+
+		function processResponse( blocks ) {
+			blocks.forEach( text => {
+				var elem = $( '<div>' + text + '</div>' );
+				$('#results').append( elem )
+				elem.on( 'click', function () {
+					speak( text );
+				} );
+			} );
+
+		}
+
+function init() {
+	$("input:file").change(function (){
+		//stop submit the form, we will post it manually.
+		//event.preventDefault();
+		$('#upload').hide();
+		$('#results').show();
+		// Get form
+
+		// Create an FormData object
+		var data = new FormData();
+		var files = $('input:file')[0].files[0];
+		var reader = new FileReader();
+		reader.addEventListener("load", function () {
+			var base64result = reader.result.split(',')[1];
+			// convert image file to base64 string
+			var request = {
+				requests: [
+					{
+						image: {
+							content: base64result
+						},
+						features: [
+							{
+								"type": "DOCUMENT_TEXT_DETECTION"
+							}
+						]
+					}
+				]
+			};
+			$.ajax({
+				url: 'https://vision.googleapis.com/v1/images:annotate',
+				type: 'post',
+				data: JSON.stringify( request ),
+				dataType: 'json',
+				contentType: 'application/json',
+				headers: {
+					"Authorization": "Bearer " + localStorage.getItem( 'google_cloud_vision_api_key' ),
+				},
+				//processData: false,
+				success: function(response){
+					var blocks = [];
+					if(response != 0){
+						response.responses.forEach( r => r.fullTextAnnotation.pages.forEach( p => p.blocks.forEach( block => {
+							var text = block.paragraphs.map( paragraph => paragraph.words.map( word => word.symbols.map( symbol => symbol.text ).join( "" ) ).join(' ') ).join("\n");
+							blocks.push( text );
+						} ) ) );
+						processResponse( blocks );
+					}
+					else{
+
+					}
+				},
+			});
+		}, false);
+		reader.readAsDataURL( files );
+
+	});
+	$('#set_up_token').hide();
+	$('#upload').show();
+}
+
+		$(function() {
+			var token = localStorage.getItem( 'google_cloud_vision_api_key' );
+			if ( token ) {
+				init();
+            } else {
+				$('#set_up_token').show();
+            }
+
+			$( '#token_upload' ).on( 'click', function() {
+				var token = $('#set_up_token textarea').val();
+				localStorage.setItem( 'google_cloud_vision_api_key', token );
+                init();
+            } );
+		});
+    </script>
+</head>
+
+<body>
+<div id="set_up_token">
+    <h2>You need to set up the Google Cloud Vision API token first.</h2>
+    <textarea></textarea>
+    <br/>
+    <input type="submit" id="token_upload">
+</div>
+<div id="upload">
+    <label for="image" class="custom-file-upload">
+        Naciśnij i zrób zdjęcie dokumentu
+    </label>
+    <input type="file" id='image' accept="image/*;capture=camera" size="60">
+</div>
+
+<div id='results'>
+    <h1>Wyniki:</h1>
+</div>
+
+</body>
+
+</html>
