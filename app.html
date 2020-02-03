@@ -14,8 +14,24 @@
         #results {
             width: 100%;
             display: none;
+            flex-direction: column;
+            height: 100%;
         }
-        #results > div {
+        #results img {
+            max-width:100%;
+            max-height: 33%;
+            border-bottom: 4px solid red;
+        }
+        #results div.mark {
+            position: absolute;
+            background-color: #ffff009c;
+            width: 0px;
+            height: 0px;
+        }
+        #results div.list {
+            overflow-y:scroll;
+        }
+        #results div.list > div {
             font-size: 7vw;
             padding: 10vw;
             border: 5px solid black
@@ -44,7 +60,7 @@
     </style>
     <script type="text/javascript">
 		var synth = window.speechSynthesis;
-
+        var currentSelection = null;
 		function speak( text ){
 			voices = synth.getVoices().filter( function( v ) {
 				return ( v.lang === 'pl-PL');
@@ -75,22 +91,63 @@
 		}
 
 		function processResponse( blocks ) {
-			blocks.forEach( text => {
-				var elem = $( '<div>' + text + '</div>' );
-				$('#results').append( elem )
+			blocks.forEach( block => {
+				var elem = $( '<div>' + block.text + '</div>' );
+				$('#results div.list').append( elem );
 				elem.on( 'click', function () {
-					speak( text );
+                    moveBox( block.vertices );
+					speak( block.text );
+					if( currentSelection ) {
+						currentSelection.css( 'background-color', 'transparent' );
+                    }
+					elem.css( 'background-color', '#ffff009c' );
+					currentSelection = elem;
 				} );
 			} );
 
 		}
 
+function getSizeRatio() {
+	return $('#results img').width() / $('#results img')[0].naturalWidth;
+}
+function moveBox( vertices ) {
+    var sizeRatio = getSizeRatio();
+    var maxY = vertices[0].y;
+    var maxX = vertices[0].x;
+	var minY = vertices[0].y;
+	var minX = vertices[0].x;
+    vertices.forEach( function( data ) {
+    	if( data.x > maxX ) {
+    		maxX = data.x;
+        }
+		if( data.y > maxY ) {
+			maxY = data.y;
+		}
+		if( data.x < minX ) {
+			minX = data.x;
+		}
+		if( data.y < minY ) {
+			minY = data.y;
+		}
+    } );
+    var dimensions = {
+        top: Math.floor( minY * sizeRatio ),
+        left: Math.floor( minX * sizeRatio ),
+        width: Math.ceil( ( maxX - minX ) * sizeRatio ),
+		height: Math.ceil( ( maxY - minY ) * sizeRatio )
+    };
+	$('#results .mark').css( 'top', dimensions.top );
+	$('#results .mark').css( 'left', dimensions.left );
+	$('#results .mark').css( 'width', dimensions.width );
+	$('#results .mark').css( 'height', dimensions.height );
+}
 function init() {
 	$("input:file").change(function (){
 		//stop submit the form, we will post it manually.
 		//event.preventDefault();
 		$('#upload').hide();
 		$('#results').show();
+		$('#results').css( 'display', 'flex');
 		// Get form
 
 		// Create an FormData object
@@ -98,6 +155,7 @@ function init() {
 		var files = $('input:file')[0].files[0];
 		var reader = new FileReader();
 		reader.addEventListener("load", function () {
+			$('#results img').attr( 'src', reader.result );
 			var base64result = reader.result.split(',')[1];
 			// convert image file to base64 string
 			var request = {
@@ -115,21 +173,22 @@ function init() {
 				]
 			};
 			$.ajax({
-				url: 'https://vision.googleapis.com/v1/images:annotate',
+				url: 'https://vision.googleapis.com/v1/images:annotate?key=' + localStorage.getItem( 'google_cloud_vision_api_key' ),
 				type: 'post',
 				data: JSON.stringify( request ),
 				dataType: 'json',
 				contentType: 'application/json',
-				headers: {
-					"Authorization": "Bearer " + localStorage.getItem( 'google_cloud_vision_api_key' ),
-				},
 				//processData: false,
 				success: function(response){
 					var blocks = [];
+					console.log( response );
 					if(response != 0){
 						response.responses.forEach( r => r.fullTextAnnotation.pages.forEach( p => p.blocks.forEach( block => {
 							var text = block.paragraphs.map( paragraph => paragraph.words.map( word => word.symbols.map( symbol => symbol.text ).join( "" ) ).join(' ') ).join("\n");
-							blocks.push( text );
+							blocks.push( {
+                                text: text,
+                                vertices: block.boundingBox.vertices
+                            } );
 						} ) ) );
 						processResponse( blocks );
 					}
@@ -178,7 +237,16 @@ function init() {
 </div>
 
 <div id='results'>
-    <h1>Wyniki:</h1>
+    <div>
+        <div class="mark"></div>
+        <img>
+    </div>
+    <div class="container">
+        <h1>Wyniki:</h1>
+        <div class="list">
+
+        </div>
+    </div>
 </div>
 
 </body>
