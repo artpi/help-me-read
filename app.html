@@ -12,6 +12,8 @@
             src="https://code.jquery.com/jquery-3.4.1.min.js"
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
             crossorigin="anonymous"></script>
+    <script src="./common.js"></script>
+    <script src="./app.js"></script>
     <style>
         #results {
             width: 100%;
@@ -60,174 +62,16 @@
         }
 
     </style>
-    <script type="text/javascript">
-		var synth = window.speechSynthesis;
-        var currentSelection = null;
-		function speak( text ){
-			voices = synth.getVoices().filter( function( v ) {
-				return ( v.lang === 'pl-PL');
-			} );
-			//console.log( voices );
-			if (synth.speaking) {
-				console.error('speechSynthesis.speaking');
-				return;
-			}
-			// if (inputTxt.value !== '') {
-			var utterThis = new SpeechSynthesisUtterance( text );
-			utterThis.onend = function (event) {
-				console.log('SpeechSynthesisUtterance.onend');
-			}
-			utterThis.onerror = function (event) {
-				console.error('SpeechSynthesisUtterance.onerror');
-			}
-//    var selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
-//    for(i = 0; i < voices.length ; i++) {
-//      if(voices[i].name === selectedOption) {
-//        utterThis.voice = voices[i];
-//      }
-//    }
-			utterThis.voice = voices[0];
-			//utterThis.pitch = pitch.value;
-			//utterThis.rate = rate.value;
-			synth.speak(utterThis);
-		}
-
-		function processResponse( blocks ) {
-			blocks.forEach( block => {
-				var elem = $( '<div>' + block.text + '</div>' );
-				$('#results div.list').append( elem );
-				elem.on( 'click', function () {
-                    moveBox( block.vertices );
-					speak( block.text );
-					if( currentSelection ) {
-						currentSelection.css( 'background-color', 'transparent' );
-                    }
-					elem.css( 'background-color', '#ffff009c' );
-					currentSelection = elem;
-				} );
-			} );
-
-		}
-
-function getSizeRatio() {
-	return $('#results img').width() / $('#results img')[0].naturalWidth;
-}
-function moveBox( vertices ) {
-    var sizeRatio = getSizeRatio();
-    var maxY = vertices[0].y;
-    var maxX = vertices[0].x;
-	var minY = vertices[0].y;
-	var minX = vertices[0].x;
-    vertices.forEach( function( data ) {
-    	if( data.x > maxX ) {
-    		maxX = data.x;
-        }
-		if( data.y > maxY ) {
-			maxY = data.y;
-		}
-		if( data.x < minX ) {
-			minX = data.x;
-		}
-		if( data.y < minY ) {
-			minY = data.y;
-		}
-    } );
-    var dimensions = {
-        top: Math.floor( minY * sizeRatio ),
-        left: Math.floor( minX * sizeRatio ),
-        width: Math.ceil( ( maxX - minX ) * sizeRatio ),
-		height: Math.ceil( ( maxY - minY ) * sizeRatio )
-    };
-	$('#results .mark').css( 'top', dimensions.top );
-	$('#results .mark').css( 'left', dimensions.left );
-	$('#results .mark').css( 'width', dimensions.width );
-	$('#results .mark').css( 'height', dimensions.height );
-}
-
-function init() {
-	const urlParams = new URLSearchParams( window.location.search );
-	const token = urlParams.get( 'token' );
-	if ( token ) {
-		$('#set_up_token').hide();
-		$('#upload').show();
-    } else {
-		$('#set_up_token').show();
-    }
-
-	$("input:file").change(function (){
-		//stop submit the form, we will post it manually.
-		//event.preventDefault();
-		$('#upload').hide();
-		$('#results').show();
-		$('#results').css( 'display', 'flex');
-		// Get form
-
-		// Create an FormData object
-		var data = new FormData();
-		var files = $('input:file')[0].files[0];
-		var reader = new FileReader();
-		reader.addEventListener("load", function () {
-			$('#results img').attr( 'src', reader.result );
-			var base64result = reader.result.split(',')[1];
-			// convert image file to base64 string
-			var request = {
-				requests: [
-					{
-						image: {
-							content: base64result
-						},
-						features: [
-							{
-								"type": "DOCUMENT_TEXT_DETECTION"
-							}
-						]
-					}
-				]
-			};
-			$.ajax({
-				url: 'https://vision.googleapis.com/v1/images:annotate?key=' + token,
-				type: 'post',
-				data: JSON.stringify( request ),
-				dataType: 'json',
-				contentType: 'application/json',
-				//processData: false,
-				success: function(response){
-					var blocks = [];
-					console.log( response );
-					if(response != 0){
-						response.responses.forEach( r => r.fullTextAnnotation.pages.forEach( p => p.blocks.forEach( block => {
-							var text = block.paragraphs.map( paragraph => paragraph.words.map( word => word.symbols.map( symbol => symbol.text ).join( "" ) ).join(' ') ).join("\n");
-							blocks.push( {
-                                text: text,
-                                vertices: block.boundingBox.vertices
-                            } );
-						} ) ) );
-						processResponse( blocks );
-					}
-					else{
-
-					}
-				},
-			});
-		}, false);
-		reader.readAsDataURL( files );
-
-	});
-
-}
-$( init );
-
-    </script>
 </head>
 
 <body>
 <div id="set_up_token">
-    <h2>You need to set up the Google Cloud Vision API token first.</h2>
-    <a href="index.html">Do that here</a>
+    <h2 id="translation-setup-token">You need to set up the Google Cloud Vision API token first.</h2>
+    <a href="index.html" id="translation-setup-token-action">Do that here</a>
 </div>
 <div id="upload">
-    <label for="image" class="custom-file-upload">
-        Naciśnij i zrób zdjęcie dokumentu
+    <label for="image" class="custom-file-upload" id="translation-camera-label">
+        Click here and take the photo of a document
     </label>
     <input type="file" id='image' accept="image/*;capture=camera" size="60">
 </div>
@@ -238,7 +82,7 @@ $( init );
         <img>
     </div>
     <div class="container">
-        <h1>Wyniki:</h1>
+        <h1 id="translation-result-header">Found Text:</h1>
         <div class="list">
 
         </div>

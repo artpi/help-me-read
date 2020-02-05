@@ -10,8 +10,26 @@
             src="https://code.jquery.com/jquery-3.4.1.min.js"
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
             crossorigin="anonymous"></script>
-    <style>
+    <script src="./common.js"></script>
+    <script>
 
+        $( function() {
+			const langSelect = $( '#lang' );
+			let defaultLang = 'en';
+			if ( navigator.language && translations.hasOwnProperty( navigator.language ) ) {
+				defaultLang = navigator.language;
+            }
+            initTranslations( defaultLang );
+            Object.keys( translations ).forEach( function ( lang ) {
+                const option = $( '<option value="' + lang + '">' + translations[lang].langName + '</option>' );
+                if ( lang === defaultLang ) {
+                	option.attr( 'selected', '' );
+                }
+                $('#lang').append( option );
+            } );
+        } )
+    </script>
+    <style>
         #set_up_token textarea {
             width: 80%;
             margin-left:auto;
@@ -27,10 +45,12 @@
 <body>
 <div id="set_up_token">
     <form action="app.html" method="get">
-        <h2>You need to set up the Google Cloud Vision API token first.</h2>
+        <h2 id="translation-intro-header">You need to set up the Google Cloud Vision API token first.</h2>
         <textarea name="token"></textarea>
         <br/>
-        <input type="submit" id="token_upload">
+        <select name="lang" id="lang">
+        </select>
+        <input type="submit">
     </form>
 </div>
 
