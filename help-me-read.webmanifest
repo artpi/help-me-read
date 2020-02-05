@@ -1,0 +1,12 @@
+{
+  "name": "Help Me Read This app to read aloud text from the camera",
+  "short_name": "Help Me Read",
+  "icons": [
+    {
+      "src": "icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    }
+  ],
+  "display": "fullscreen",
+}

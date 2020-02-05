@@ -5,7 +5,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width">
-    <title>Upload to recognition</title>
+    <link rel="manifest" href="help-me-read.webmanifest">
+    <title>Help Me Read This</title>
     <script
             src="https://code.jquery.com/jquery-3.4.1.min.js"
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
@@ -141,7 +142,17 @@ function moveBox( vertices ) {
 	$('#results .mark').css( 'width', dimensions.width );
 	$('#results .mark').css( 'height', dimensions.height );
 }
+
 function init() {
+	const urlParams = new URLSearchParams( window.location.search );
+	const token = urlParams.get( 'token' );
+	if ( token ) {
+		$('#set_up_token').hide();
+		$('#upload').show();
+    } else {
+		$('#set_up_token').show();
+    }
+
 	$("input:file").change(function (){
 		//stop submit the form, we will post it manually.
 		//event.preventDefault();
@@ -173,7 +184,7 @@ function init() {
 				]
 			};
 			$.ajax({
-				url: 'https://vision.googleapis.com/v1/images:annotate?key=' + localStorage.getItem( 'google_cloud_vision_api_key' ),
+				url: 'https://vision.googleapis.com/v1/images:annotate?key=' + token,
 				type: 'post',
 				data: JSON.stringify( request ),
 				dataType: 'json',
@@ -201,33 +212,17 @@ function init() {
 		reader.readAsDataURL( files );
 
 	});
-	$('#set_up_token').hide();
-	$('#upload').show();
+
 }
+$( init );
 
-		$(function() {
-			var token = localStorage.getItem( 'google_cloud_vision_api_key' );
-			if ( token ) {
-				init();
-            } else {
-				$('#set_up_token').show();
-            }
-
-			$( '#token_upload' ).on( 'click', function() {
-				var token = $('#set_up_token textarea').val();
-				localStorage.setItem( 'google_cloud_vision_api_key', token );
-                init();
-            } );
-		});
     </script>
 </head>
 
 <body>
 <div id="set_up_token">
     <h2>You need to set up the Google Cloud Vision API token first.</h2>
-    <textarea></textarea>
-    <br/>
-    <input type="submit" id="token_upload">
+    <a href="index.html">Do that here</a>
 </div>
 <div id="upload">
     <label for="image" class="custom-file-upload">
