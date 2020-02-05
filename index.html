@@ -35,8 +35,28 @@
             margin-left:auto;
             margin-right: auto;
             display:block;
+            border: 1px solid black;
+            font-size: 3vw;
+            line-height: 5vw;
+        }
+        #lang {
+            width:80%;
+            margin-left:auto;
+            margin-right: auto;
+            display:block;
+            font-size: 3vw;
         }
         #set_up_token {
+        }
+        body {
+            font-size: 3vw;
+            font-family: "Trebuchet MS", Verdana;
+            text-align: center;
+        }
+        .button {
+            border: 1px solid black;
+            font-size: 3vw;
+            line-height: 5vw;
         }
 
     </style>
@@ -46,11 +66,12 @@
 <div id="set_up_token">
     <form action="app.html" method="get">
         <h2 id="translation-intro-header">You need to set up the Google Cloud Vision API token first.</h2>
+        <br/>
+        <select name="lang" id="lang"></select>
+        <br/>
         <textarea name="token"></textarea>
         <br/>
-        <select name="lang" id="lang">
-        </select>
-        <input type="submit">
+        <input type="submit" class="button">
     </form>
 </div>
 
