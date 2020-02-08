@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width">
-    <title>Purchase cancelled.</title>
+    <title>Purchase Success!</title>
     <script
             src="https://code.jquery.com/jquery-3.4.1.min.js"
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
@@ -35,13 +35,13 @@
 				$.get( 'https://help-me-read-this.appspot.com/checkout/get?session_id=' + checkout_sesion, function( data ) {
 					var d = JSON.parse( data );
 					if ( d.error ) {
-						$( '#updates' ).html( 'Something went wrong! Please email <a href="mailto:support@helpmereadthis.com">support@helpmereadthis.com</a>' );
+						$( '#updates' ).html( translations[defaultLang]['translation-something-wrong'] );
 						return;
 					}
 					if ( d.status === 'active' && d.token ) {
 						$( '#token' ).val( d.token );
 						$( 'button' ).attr( 'disabled', false );
-						$( '#updates' ).text( '✅ Your payment completed successfully' );
+						$( '#updates' ).text( translations[defaultLang]['translation-payment-completed-successfully'] );
 						return;
 					}
 					setTimeout( doPoll, 3000 );
@@ -50,7 +50,7 @@
             if( checkout_sesion ) {
                 doPoll();
             } else {
-            	$( '#updates' ).html( 'Something went wrong! Please email <a href="mailto:support@helpmereadthis.com">support@helpmereadthis.com</a>' );
+            	$( '#updates' ).html( translations[lang]['translation-something-wrong'] );
             }
 		} );
 
@@ -58,19 +58,19 @@
 </head>
 
 <body>
-<h2>✅ Thank you for purchasing token!</h2>
+<h2 id="translation-thank-you-purchase">✅ Thank you for purchasing token!</h2>
 
 <form action="../app.html" method="get" >
-<p>The language you select here will be hardcoded, so that the person using this will always default to one language. This is to prevent accidental language switching for voice synthesis.</p>
+<p id="translation_lang_select">The language you select here will be hardcoded, so that the person using this will always default to one language. This is to prevent accidental language switching for voice synthesis.</p>
 <select name="lang" id="lang"></select>
 <input type="hidden" name="token" id="token">
-<h3>After clicking the button below, you will be redirected to the App. Remeber to save it on Homescreen for easy access:</h3>
+<h3 id="translation-homescreen-instructions-info">After clicking the button below, you will be redirected to the App. Remeber to save it on Homescreen for easy access:</h3>
 <ul>
-    <li>IOS: Share->Add to Homescreen</li>
-    <li>Android: Top-right menu in Chrome->Add to Homescreen</li>
+    <li id="translation-homescreen-1">IOS: Share->Add to Homescreen</li>
+    <li id="translation-homescreen-2">Android: Top-right menu in Chrome->Add to Homescreen</li>
 </ul>
 <p id="updates">Verifying your payment...</p>
-    <button type="submit" disabled="true" class="button">Go to the App</button>
+    <button type="submit" disabled="true" class="button" id="translation-go-to-app">Go to the App</button>
 </form>
 
 </body>
