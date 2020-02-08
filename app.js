@@ -125,8 +125,13 @@ function init() {
 					}
 				]
 			};
+			var endpoint = 'https://vision.googleapis.com/v1/images:annotate';
+			// If this endpoint is provided by subscription
+			if ( token.indexOf( 'sub_' ) === 0 ) {
+				endpoint = 'https://help-me-read-this.appspot.com/vision';
+			}
 			$.ajax({
-				url: 'https://vision.googleapis.com/v1/images:annotate?key=' + token,
+				url: endpoint + '?key=' + token,
 				type: 'post',
 				data: JSON.stringify( request ),
 				dataType: 'json',

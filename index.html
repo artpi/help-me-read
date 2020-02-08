@@ -11,69 +11,102 @@
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
             crossorigin="anonymous"></script>
     <script src="./common.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
 
         $( function() {
-			const langSelect = $( '#lang' );
-			let defaultLang = 'en';
-			if ( navigator.language && translations.hasOwnProperty( navigator.language ) ) {
-				defaultLang = navigator.language;
-            }
-            initTranslations( defaultLang );
-            Object.keys( translations ).forEach( function ( lang ) {
-                const option = $( '<option value="' + lang + '">' + translations[lang].langName + '</option>' );
-                if ( lang === defaultLang ) {
-                	option.attr( 'selected', '' );
-                }
-                $('#lang').append( option );
-            } );
-        } )
+			var stripe = Stripe( 'pk_test_JnZLybWP3ZhnT6NihVFYO2X8008pIxlpdB' );
+			$('#purchase').on( 'click', function() {
+				$.get( "https://help-me-read-this.appspot.com/checkout/session", function( data ) {
+					data = JSON.parse( data );
+					stripe.redirectToCheckout( { sessionId: data.id } )
+						.then( function (result) {
+							console.log( result );
+						} );
+				});
+			} );
+        } );
+
     </script>
     <style>
-        #set_up_token textarea {
-            width: 80%;
-            margin-left:auto;
-            margin-right: auto;
-            display:block;
-            border: 1px solid black;
-            font-size: 3vw;
-            line-height: 5vw;
-        }
-        #lang {
-            width:80%;
-            margin-left:auto;
-            margin-right: auto;
-            display:block;
-            font-size: 3vw;
-        }
-        #set_up_token {
-        }
+
         body {
             font-size: 3vw;
             font-family: "Trebuchet MS", Verdana;
             text-align: center;
+            padding: 0;
+            margin: 0;
+            margin-bottom: 200px;
         }
-        .button {
+        ul, ol {
+            text-align:left;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left:20%;
+            padding-right: 20%;
+            background-color: #e5ebee;
+            padding-top: 3vw;
+            padding-bottom: 3vw;
+        }
+        li {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        #purchase {
             border: 1px solid black;
             font-size: 3vw;
             line-height: 5vw;
+            cursor: pointer;
         }
-
+        p {
+            text-align:left;
+            margin-left: auto;
+            margin-right: auto;
+            width: 60%;
+            font-size: 2vw;
+            line-height: 2em;
+        }
+        h1, h2, h3 {
+            margin: 5%;
+        }
+        p.small {
+            font-size: 1.5vw;
+            font-style: italic;
+        }
     </style>
 </head>
 
 <body>
-<div id="set_up_token">
-    <form action="app.html" method="get">
-        <h2 id="translation-intro-header">You need to set up the Google Cloud Vision API token first.</h2>
-        <br/>
-        <select name="lang" id="lang"></select>
-        <br/>
-        <textarea name="token"></textarea>
-        <br/>
-        <input type="submit" class="button">
-    </form>
-</div>
+<h1>🧐 Help Me Read This!</h1>
+<h3>An app that captures the photo from the camera and reads the text out loud</h3>
+
+You, or your loved ones with vision impairment will be able to:
+<ul>
+    <li>💊 Scan and read the fine print on medical prescriptions</li>
+    <li>📋 Read the legal documents</li>
+    <li>🚀 Enjoy a little bit of freedom, self-sufficiency and dignity</li>
+</ul>
+
+<p>My grandpa is almost 90 years old and lives alone. He is a very proud person and it is embarassing for him to ask me to read him the fine print on the letters, documents and prescription he gets. Sometimes, he feels very upset that he has to wait for me to read it for him.</p>
+<p>I built this app for him, so he can roam around and feel in control.</p>
+
+<h2>Here is how it works:</h2>
+<ol>
+    <li>Open the camera to capture the text</li>
+    <li>App recognizes text</li>
+    <li>It displays all found sentences in a huge font</li>
+    <li>If you click on text, it reads it out loud</li>
+</ol>
+
+<p class="small">Turn on the sound to hear how it reads the text</p>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Az8bKWw_4Ug" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<p class="small">This is an Open Source project that uses paid Google Cloud Vision API and you can run it yourself. If you know what it is, <a href="./support/cloud-vision.html">read on here</a></p>
+<p>If you are <b>not an engineering wizard</b>, or you have no intention of figuring this out, I have set up a subscription for you.</p>
+<p>For $5/month you can scan up to 1000 pages monthly. Click below to subscribe and I will sent you the setup instructions.</p>
+
+<button id="purchase">Subscribe for $5/month 👉</button>
 
 </body>
 
