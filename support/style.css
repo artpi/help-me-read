@@ -47,3 +47,16 @@ h1, h2, h3 {
 	width: 60%;
 	line-height: 2em;
 }
+
+#lang {
+	width:80%;
+	margin-left:auto;
+	margin-right: auto;
+	display:block;
+	font-size: 3vw;
+}
+.button {
+	border: 1px solid black;
+	font-size: 3vw;
+	line-height: 5vw;
+}
