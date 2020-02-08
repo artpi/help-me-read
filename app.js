@@ -138,7 +138,7 @@ function init() {
 			}
 			$.ajax({
 				url: endpoint + '?key=' + token,
-				type: 'post',
+				type: ( token === 'demo' ) ? 'get' : 'post',
 				data: JSON.stringify( request ),
 				dataType: 'json',
 				contentType: 'application/json',
