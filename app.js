@@ -91,6 +91,9 @@ function init() {
 	if ( token ) {
 		$('#set_up_token').hide();
 		$('#upload').show();
+		if( token === 'demo') {
+			$('#demo').show();
+		}
 	} else {
 		$('#set_up_token').show();
 	}
@@ -129,6 +132,9 @@ function init() {
 			// If this endpoint is provided by subscription
 			if ( token.indexOf( 'sub_' ) === 0 ) {
 				endpoint = 'https://help-me-read-this.appspot.com/vision';
+			}
+			if ( token === 'demo' ) {
+				endpoint = './demo/demo_response_en.json';
 			}
 			$.ajax({
 				url: endpoint + '?key=' + token,

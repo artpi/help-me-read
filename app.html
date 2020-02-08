@@ -15,6 +15,9 @@
     <script src="./common.js"></script>
     <script src="./app.js"></script>
     <style>
+        body {
+            font-family: "Trebuchet MS", Verdana;
+        }
         #results {
             width: 100%;
             display: none;
@@ -63,20 +66,34 @@
         #set_up_token {
             display: none;
         }
+        #demo {
+            display:none;
+        }
 
     </style>
 </head>
 
 <body>
 <div id="set_up_token">
-    <h2 id="translation-setup-token">You need to set up the Google Cloud Vision API token first.</h2>
-    <a href="index.html" id="translation-setup-token-action">Do that here</a>
+    <h2 id="translation-setup-token">You need to set up the token first.</h2>
+    <a href="index.html" id="translation-setup-token-action">You can do that here</a>
 </div>
 <div id="upload">
     <label for="image" class="custom-file-upload" id="translation-camera-label">
         Click here and take the photo of a document
     </label>
     <input type="file" id='image' accept="image/*;capture=camera" size="60">
+    <div id="demo">
+        <h1>You are using demo mode! Here is how you can test it:</h1>
+        <ol>
+            <li><a href="./demo/demo_image.png">Download this image.</a>Demo mode will only recognize this specific image.</li>
+            <li>Upload it instead of using the camera</li>
+            <li>After text is recognized, click on the paragraph to read it out loud</li>
+            <li>If the text is not recognized, <b>Make sure you have enabled the english voice</b></li>
+            <li><a href="./index.html#subscribe">Subscribe to get a working token</a></li>
+            <li><a href="./support/cloud-vision.html">Or set your own Cloud Vision key</a></li>
+        </ol>
+    </div>
 </div>
 
 <div id='results'>
