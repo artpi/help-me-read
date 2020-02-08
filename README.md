@@ -22,6 +22,7 @@ This is a Single Page Web Application:
 - Uses Speech API to read the content out loud
 - IF Google API token is used, only Google backend is used, ensuring total independence from my backend
 - If you don't want to set up a token, you can subscribe to use my backend.
+- Everything is hosted by github pages. Everything in master is directly available to users.
 
 ## Contributing
 
