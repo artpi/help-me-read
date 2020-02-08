@@ -133,34 +133,37 @@ function init() {
 			if ( token.indexOf( 'sub_' ) === 0 ) {
 				endpoint = 'https://help-me-read-this.appspot.com/vision';
 			}
-			if ( token === 'demo' ) {
-				endpoint = './demo/demo_response_en.json';
-			}
-			$.ajax({
-				url: endpoint + '?key=' + token,
-				type: ( token === 'demo' ) ? 'get' : 'post',
-				data: JSON.stringify( request ),
-				dataType: 'json',
-				contentType: 'application/json',
-				//processData: false,
-				success: function(response){
-					var blocks = [];
-					console.log( response );
-					if(response != 0){
-						response.responses.forEach( r => r.fullTextAnnotation.pages.forEach( p => p.blocks.forEach( block => {
-							var text = block.paragraphs.map( paragraph => paragraph.words.map( word => word.symbols.map( symbol => symbol.text ).join( "" ) ).join(' ') ).join("\n");
-						blocks.push( {
-							text: text,
-							vertices: block.boundingBox.vertices
-						} );
-					} ) ) );
-						processResponse( blocks, language );
-					}
-					else{
+			function getResponseData( response ) {
+				var blocks = [];
+				console.log( response );
+				if(response != 0){
+					response.responses.forEach( r => r.fullTextAnnotation.pages.forEach( p => p.blocks.forEach( block => {
+						var text = block.paragraphs.map( paragraph => paragraph.words.map( word => word.symbols.map( symbol => symbol.text ).join( "" ) ).join(' ') ).join("\n");
+					blocks.push( {
+						text: text,
+						vertices: block.boundingBox.vertices
+					} );
+				} ) ) );
+					processResponse( blocks, language );
+				}
+				else{
 
-					}
-				},
-			});
+				}
+			}
+
+			if ( token === 'demo' ) {
+				$.get( './demo/demo_response_en.json', getResponseData );
+			} else {
+				$.ajax( {
+					url: endpoint + '?key=' + token,
+					type: 'post',
+					data: JSON.stringify( request ),
+					dataType: 'json',
+					contentType: 'application/json',
+					success: getResponseData,
+				} );
+			}
+
 		}, false);
 		reader.readAsDataURL( files );
 
