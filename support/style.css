@@ -1,0 +1,49 @@
+
+body {
+	font-size: 3vw;
+	font-family: "Trebuchet MS", Verdana;
+	text-align: center;
+	padding: 0;
+	margin: 0;
+	margin-bottom: 100px;
+}
+ul, ol {
+	text-align:left;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left:20%;
+	padding-right: 20%;
+	background-color: #e5ebee;
+	padding-top: 3vw;
+	padding-bottom: 3vw;
+}
+li {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+#purchase {
+	border: 1px solid black;
+	font-size: 3vw;
+	line-height: 5vw;
+	cursor: pointer;
+	margin: 5vw;
+}
+p {
+	text-align:left;
+	margin-left: auto;
+	margin-right: auto;
+	width: 60%;
+	font-size: 2vw;
+	line-height: 2em;
+}
+h1, h2, h3 {
+	margin: 5%;
+}
+.small {
+	font-size: 1.5vw;
+	font-style: italic;
+	margin-left: auto;
+	margin-right: auto;
+	width: 60%;
+	line-height: 2em;
+}

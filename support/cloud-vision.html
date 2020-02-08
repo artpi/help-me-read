@@ -11,6 +11,8 @@
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
             crossorigin="anonymous"></script>
     <script src="../common.js"></script>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+
     <script>
 
 		$( function() {
@@ -68,12 +70,17 @@
     <form action="../app.html" method="get">
         <h2 id="translation-intro-header">You need to set up the Google Cloud Vision API token first.</h2>
         <br/>
+        <p>The language you select here will be hardcoded, so that the person using this will always default to one language</p>
         <select name="lang" id="lang"></select>
         <br/>
+        <p>After turning on the Cloud Vision API, paste here the <a href="https://console.cloud.google.com/apis/credentials">API KEYS</a> (not service accounts) to the project. Scope them to this specific API first!</p>
         <textarea name="token"></textarea>
         <br/>
         <input type="submit" class="button">
+        <div style="margin-top:3vw;margin-bottom:3vw"><a href="../index.html#subscribe">If you don't want to deal with that, you can purchase access</a></div>
     </form>
+    <div class="small">As mentioned, this is an Open Source project that aims to help people with vision impairement. <a target="_blank" href="https://github.com/artpi/help-me-read">If you have ideas or requests, pull requests are open!</a></div>
+
 </div>
 
 </html>
