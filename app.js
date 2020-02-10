@@ -111,6 +111,8 @@ function init() {
 		var files = $('input:file')[0].files[0];
 		var reader = new FileReader();
 		reader.addEventListener("load", function () {
+			$('#results div.list').html('');
+			$( '.wait' ).show();
 			$('#results img').attr( 'src', reader.result );
 			var base64result = reader.result.split(',')[1];
 			// convert image file to base64 string
@@ -145,6 +147,7 @@ function init() {
 					} );
 				} ) ) );
 					processResponse( blocks, language );
+					$( '.wait' ).hide();
 				}
 				else{
 
