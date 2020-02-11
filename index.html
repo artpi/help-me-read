@@ -29,7 +29,7 @@
     <script>
 
         $( function() {
-			var stripe = Stripe( 'pk_test_JnZLybWP3ZhnT6NihVFYO2X8008pIxlpdB' );
+			var stripe = Stripe( 'pk_live_Iy4E2fHse5jKEx1eHIq5xmxx00IgUtk9VD' );
 			$('#purchase').on( 'click', function() {
 				$.get( "https://help-me-read-this.appspot.com/checkout/session", function( data ) {
 					data = JSON.parse( data );
@@ -92,4 +92,16 @@ You, or your loved ones with vision impairment will be able to:
 <div class="small">As mentioned, this is an Open Source project that aims to help people with vision impairement. <a target="_blank" href="https://github.com/artpi/help-me-read">If you have ideas or requests, pull requests are open!</a></div>
 <br/>
 <div class="small"><a target="_blank" href="https://twitter.com/artpi">@artpi</a> contraption.</div>
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-992045-29"></script>
+<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+
+	gtag('config', 'UA-992045-29');
+</script>
+
 </html>
