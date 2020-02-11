@@ -52,6 +52,7 @@ function getSizeRatio() {
 	return $('#results img').width() / $('#results img')[0].naturalWidth;
 }
 function moveBox( vertices ) {
+	var startPos = $('#results img').position();
 	var sizeRatio = getSizeRatio();
 	var maxY = vertices[0].y;
 	var maxX = vertices[0].x;
@@ -77,8 +78,8 @@ function moveBox( vertices ) {
 		width: Math.ceil( ( maxX - minX ) * sizeRatio ),
 		height: Math.ceil( ( maxY - minY ) * sizeRatio )
 	};
-	$('#results .mark').css( 'top', dimensions.top );
-	$('#results .mark').css( 'left', dimensions.left );
+	$('#results .mark').css( 'top', startPos.top + dimensions.top );
+	$('#results .mark').css( 'left', startPos.left + dimensions.left );
 	$('#results .mark').css( 'width', dimensions.width );
 	$('#results .mark').css( 'height', dimensions.height );
 }
